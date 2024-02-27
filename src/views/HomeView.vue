@@ -31,10 +31,25 @@ const generateImg = () => {
     })
   })
 }
+function uploadFile (e) {
+  // 判斷副檔名
+  const fileExtension = e.target.files[0].name.split('.').at(-1)
+  const isDocx = fileExtension === 'docx'
+
+  const file = e.target.files[0]
+  const fileReader = new FileReader()
+  fileReader.readAsArrayBuffer(file)
+
+  fileReader.onload = () => {
+    if (isDocx) docx.value = fileReader.result
+  }
+}
 
 </script>
 
 <template>
+  <input type="file"
+         @change="uploadFile">
 
   <img :src='imgUrl' alt='' style="width:100px;height:100px;">
 
