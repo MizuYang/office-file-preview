@@ -1,15 +1,19 @@
 <script setup>
 import { ref, nextTick } from 'vue'
 
-// 引入VueOfficeDocx组件
+// 文檔預覽套件
+import VueOfficeExcel from '@vue-office/excel'
 import VueOfficeDocx from '@vue-office/docx'
-// 引入相关样式
+import '@vue-office/excel/lib/index.css'
 import '@vue-office/docx/lib/index.css'
 
 import html2canvas from 'html2canvas'
 
 // 设置文档网络地址，可以是相对地址
-const docx = ref('http://static.shanhuxueyuan.com/test6.docx')
+const fileData = ref({
+  docx: 'http://static.shanhuxueyuan.com/test6.docx',
+  xlsx: ''
+})
 const imgUrl = ref('')
 
 // 文檔渲染完成後才透過html2canvas生成圖片
@@ -32,16 +36,23 @@ const generateImg = () => {
   })
 }
 function uploadFile (e) {
-  // 判斷副檔名
+  // 取得副檔名
   const fileExtension = e.target.files[0].name.split('.').at(-1)
-  const isDocx = fileExtension === 'docx'
-
   const file = e.target.files[0]
   const fileReader = new FileReader()
   fileReader.readAsArrayBuffer(file)
 
   fileReader.onload = () => {
-    if (isDocx) docx.value = fileReader.result
+    // 初始化
+    fileDataInit()
+
+    fileData.value[fileExtension] = fileReader.result
+  }
+}
+function fileDataInit () {
+  fileData.value = {
+    docx: '',
+    xlsx: ''
   }
 }
 
@@ -55,12 +66,21 @@ function uploadFile (e) {
 
   <div id="vueOfficeDocx"
        class="position-absolute"
-       style="transform: translate(-999999px, -999999px);">
-    <VueOfficeDocx
-        :src="docx"
-        @rendered="renderedHandler"
-        style="width:100vw;height:100vh;"
-    />
+       style="width:50%;height:30%;transform: translate(-999999px, -999999px);">
+    <template v-if="fileData.docx">
+      <VueOfficeDocx
+          :src="fileData.docx"
+          @rendered="renderedHandler"
+          style="width:100vw;height:100vh;"
+      />
+    </template>
+    <template v-if="fileData.xlsx">
+      <VueOfficeExcel
+          :src="fileData.xlsx"
+          @rendered="renderedHandler"
+          style="width:100vw;height:100vh;"
+      />
+    </template>
   </div>
 
 </template>
