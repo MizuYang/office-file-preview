@@ -4,15 +4,17 @@ import { ref, nextTick } from 'vue'
 // 文檔預覽套件
 import VueOfficeExcel from '@vue-office/excel'
 import VueOfficeDocx from '@vue-office/docx'
+import VueOfficePdf from '@vue-office/pdf'
 import '@vue-office/excel/lib/index.css'
 import '@vue-office/docx/lib/index.css'
-
+// 螢幕截圖套件
 import html2canvas from 'html2canvas'
 
 // 设置文档网络地址，可以是相对地址
 const fileData = ref({
   docx: 'http://static.shanhuxueyuan.com/test6.docx',
-  xlsx: ''
+  xlsx: '',
+  pdf: ''
 })
 const imgUrl = ref('')
 
@@ -50,10 +52,9 @@ function uploadFile (e) {
   }
 }
 function fileDataInit () {
-  fileData.value = {
-    docx: '',
-    xlsx: ''
-  }
+  Object.keys(fileData.value).forEach(keyName => {
+    fileData.value[keyName] = ''
+  })
 }
 
 </script>
@@ -77,6 +78,13 @@ function fileDataInit () {
     <template v-if="fileData.xlsx">
       <VueOfficeExcel
           :src="fileData.xlsx"
+          @rendered="renderedHandler"
+          style="width:100vw;height:100vh;"
+      />
+    </template>
+    <template v-if="fileData.pdf">
+      <VueOfficePdf
+          :src="fileData.pdf"
           @rendered="renderedHandler"
           style="width:100vw;height:100vh;"
       />
